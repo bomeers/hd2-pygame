@@ -1,4 +1,5 @@
 import pygame
+import math  # Import math module for trigonometric functions
 
 # Initialize Pygame
 pygame.init()
@@ -93,38 +94,4 @@ while running:
                         offset_x = image_rect.x - event.pos[0]
                         offset_y = image_rect.y - event.pos[1]
 
-        elif event.type == pygame.MOUSEBUTTONUP:
-            dragging = False
-
-        # Mouse motion event for dragging the image
-        if event.type == pygame.MOUSEMOTION:
-            if dragging:
-                # Update image position while ensuring it doesn't go out of bounds (circular boundary)
-                new_x = event.pos[0] + offset_x
-                new_y = event.pos[1] + offset_y
-
-                # Calculate the distance from the center of the screen
-                distance_from_center = ((new_x - WIDTH // 2) ** 2 + (new_y - HEIGHT // 2) ** 2) ** 0.5
-
-                # Check if the image is within the circular boundary (radius of 240px)
-                if distance_from_center + image_rect.width // 2 * zoom_level > RADIUS * 2:
-                    # If out of bounds, limit the image's position so that it stays within the circle
-                    angle = pygame.math.Vector2(new_x - WIDTH // 2, new_y - HEIGHT // 2).angle_to((1, 0))
-                    new_x = WIDTH // 2 + RADIUS * pygame.math.cos(pygame.math.radians(angle)) - image_rect.width // 2 * zoom_level
-                    new_y = HEIGHT // 2 + RADIUS * pygame.math.sin(pygame.math.radians(angle)) - image_rect.height // 2 * zoom_level
-
-                # Update the image's position
-                image_rect.x = new_x
-                image_rect.y = new_y
-
-    # Clear the screen with a white background
-    screen.fill((255, 255, 255))
-
-    # Draw the image at its current position
-    screen.blit(image, image_rect)
-
-    # Update the screen
-    pygame.display.flip()
-
-# Quit Pygame
-pygame.quit()
+        elif event.ty
