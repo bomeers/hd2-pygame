@@ -30,12 +30,12 @@ def resize_image(image, target_width, target_height):
 image_path = "Star-Map.bmp"  # Assuming the image is in the same folder as the script
 zoomed_out_path = "zoomed-out.png"  # Assuming the image is in the same folder as the script
 
-# Load and resize the "Star-Map.bmp" image
+# Load the "Star-Map.bmp" image (background)
 image = pygame.image.load(image_path)
 image = resize_image(image, WIDTH, HEIGHT)
 image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
-# Load the "zoomed-out.png" image
+# Load the "zoomed-out.png" image (overlay)
 zoomed_out_image = pygame.image.load(zoomed_out_path)
 zoomed_out_image = resize_image(zoomed_out_image, WIDTH, HEIGHT)
 zoomed_out_rect = zoomed_out_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
@@ -98,13 +98,13 @@ while running:
                     if zoomed_in:
                         # Zoom out
                         zoom_level /= ZOOM_FACTOR
-                        # Revert to the original image
+                        # Revert to the original image (Star-Map.bmp)
                         image = pygame.image.load(image_path)
                         image = resize_image(image, WIDTH * zoom_level, HEIGHT * zoom_level)
                     else:
                         # Zoom in
                         zoom_level *= ZOOM_FACTOR
-                        # Switch to the zoomed-out image
+                        # Switch to the zoomed-out image (zoomed-out.png)
                         image = pygame.image.load(zoomed_out_path)
                         image = resize_image(image, WIDTH * zoom_level, HEIGHT * zoom_level)
 
@@ -142,12 +142,14 @@ while running:
     # Clear the screen with a black background
     screen.fill((0, 0, 0))  # Black background
 
-    # Draw the main image (either the zoomed-in or zoomed-out image)
-    screen.blit(image, image_rect)
-
-    # Overlay the zoomed-out image on top (if zoomed in, or whenever it's needed)
+    # Draw the background image (Star-Map.bmp) when zoomed out
+    if not zoomed_in:
+        screen.blit(image, image_rect)
+    
+    # Draw the zoomed-in image (zoomed-out.png) when zoomed in
     if zoomed_in:
-        screen.blit(zoomed_out_image, zoomed_out_rect)
+        screen.blit(image, image_rect)  # Draw zoomed-in image (either zoomed-out or Star-Map)
+        screen.blit(zoomed_out_image, zoomed_out_rect)  # Overlay zoomed-out image on top
 
     # Update the screen
     pygame.display.flip()
