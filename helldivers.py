@@ -27,12 +27,13 @@ def resize_image(image, target_width, target_height):
 
     if aspect_ratio > 1:  # Wide image
         new_width = target_width
-        new_height = int(target_width / aspect_ratio)
+        new_height = target_width / aspect_ratio
     else:  # Tall image
         new_height = target_height
-        new_width = int(target_height * aspect_ratio)
+        new_width = target_height * aspect_ratio
 
-    return pygame.transform.scale(image, (new_width, new_height))
+    # Cast the new dimensions to integers before passing to scale
+    return pygame.transform.scale(image, (int(new_width), int(new_height)))
 
 # Image URL
 image_url = "https://cdn.esawebb.org/archives/images/screen/jupiter-auroras1.jpg"
