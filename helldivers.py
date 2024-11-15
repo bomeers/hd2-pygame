@@ -7,13 +7,9 @@ pygame.init()
 WIDTH, HEIGHT = 480, 480  # Window size
 ZOOM_FACTOR = 4  # Zoom factor for each double click (for both zoom in and zoom out)
 DOUBLE_CLICK_TIME = 500  # Maximum time (in milliseconds) between clicks for a double-click
-
 # Set up the Pygame screen without the title bar (no frame)
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("Double Click to Zoom and Drag Image")
-
-# Hide the mouse cursor
-pygame.mouse.set_visible(False)
 
 # Resize the image while maintaining the aspect ratio
 def resize_image(image, target_width, target_height):
@@ -102,10 +98,8 @@ while running:
         if event.type == pygame.MOUSEMOTION:
             if dragging:
                 # Update image position while ensuring it doesn't go out of bounds
-                mouse_x, mouse_y = pygame.mouse.get_pos()  # Get the current mouse position
-                
-                image_rect.x = mouse_x + offset_x
-                image_rect.y = mouse_y + offset_y
+                image_rect.x = event.pos[0] + offset_x
+                image_rect.y = event.pos[1] + offset_y
 
                 # Prevent the image from being dragged out of bounds
                 if image_rect.left > 0:
