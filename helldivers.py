@@ -1,6 +1,4 @@
 import pygame
-import requests
-from io import BytesIO
 
 # Initialize Pygame
 pygame.init()
@@ -12,13 +10,6 @@ DOUBLE_CLICK_TIME = 500  # Maximum time (in milliseconds) between clicks for a d
 # Set up the Pygame screen without the title bar (no frame)
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("Double Click to Zoom and Drag Image")
-
-# Function to load image from a URL
-def load_image_from_url(url):
-    response = requests.get(url)
-    img_data = BytesIO(response.content)
-    img = pygame.image.load(img_data)
-    return img
 
 # Resize the image while maintaining the aspect ratio
 def resize_image(image, target_width, target_height):
@@ -35,11 +26,11 @@ def resize_image(image, target_width, target_height):
     # Cast the new dimensions to integers before passing to scale
     return pygame.transform.scale(image, (int(new_width), int(new_height)))
 
-# Image URL
-image_url = "https://cdn.esawebb.org/archives/images/screen/jupiter-auroras1.jpg"
+# Load the image from a local file
+image_path = "Star-Map.png"  # Assuming the image is in the same folder as the script
+image = pygame.image.load(image_path)
 
-# Load the image and resize it
-image = load_image_from_url(image_url)
+# Resize the image to fit the screen (initially, at its original aspect ratio)
 image = resize_image(image, WIDTH, HEIGHT)
 image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
@@ -85,7 +76,7 @@ while running:
                     zoomed_in = not zoomed_in
 
                     # Resize the image based on the new zoom level
-                    image = resize_image(load_image_from_url(image_url), WIDTH * zoom_level, HEIGHT * zoom_level)
+                    image = resize_image(pygame.image.load(image_path), WIDTH * zoom_level, HEIGHT * zoom_level)
                     image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
                 # Start dragging
