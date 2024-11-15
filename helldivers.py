@@ -49,6 +49,11 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        
+        # Check for Escape key to exit
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False  # Exit the game loop when Escape is pressed
 
         # Mouse button events for dragging and zooming
         if event.type == pygame.MOUSEBUTTONDOWN:
