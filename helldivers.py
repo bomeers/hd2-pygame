@@ -146,11 +146,8 @@ while running:
     # Draw the background image at its current position
     screen.blit(image, image_rect)
 
-    # Recalculate the Earth image's center every frame to keep it centered on the zoomed image
+    # Update the Earth image's position to follow the zoomed-in background
     earth_image_rect.center = image_rect.center
-
-    # **Re-resize the Earth image** before drawing it on screen
-    earth_image = resize_image(pygame.image.load(earth_image_path), earth_image_width, earth_image.get_height())
 
     # Draw the "super earth.png" image on top of the background image (static size)
     screen.blit(earth_image, earth_image_rect)
