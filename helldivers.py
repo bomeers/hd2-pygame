@@ -30,7 +30,7 @@ def resize_image(image, target_width, target_height):
     return pygame.transform.scale(image, (int(new_width), int(new_height)))
 
 # Load the image from a local file
-image_path = "Star-Map.jpg"  # Assuming the image is in the same folder as the script
+image_path = "Star-Map.bmp"  # Assuming the image is in the same folder as the script
 image = pygame.image.load(image_path)
 
 # Resize the image to fit the screen (initially, at its original aspect ratio)
