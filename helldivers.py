@@ -6,12 +6,12 @@ pygame.init()
 
 # Constants
 WIDTH, HEIGHT = 480, 480  # Window size
-ZOOM_FACTOR = 4  # Zoom factor for each double click (for both zoom in and zoom out)
+ZOOM_FACTOR = 1.2  # Zoom factor for each double click (for both zoom in and zoom out)
 DOUBLE_CLICK_TIME = 500  # Maximum time (in milliseconds) between clicks for a double-click
 RADIUS = 240  # Radius of the circular boundary (half of 480px diameter)
 
 # Set up the Pygame screen without the title bar (no frame)
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.NOFRAME)
 pygame.display.set_caption("Double Click to Zoom and Drag Image")
 
 # Resize the image while maintaining the aspect ratio
@@ -49,7 +49,21 @@ double_click = False  # Flag to indicate if it's a double-click
 def is_within_circular_boundary(image_rect):
     # Calculate distance from the center of the screen
     distance_from_center = math.sqrt((image_rect.centerx - WIDTH // 2) ** 2 + (image_rect.centery - HEIGHT // 2) ** 2)
+    # Check if the image's edges are within the circular boundary
     return distance_from_center + max(image_rect.width, image_rect.height) / 2 <= RADIUS * 2
+
+# Adjust the image position to ensure it stays within the circular boundary
+def clamp_to_circular_boundary(image_rect):
+    # Ensure the image does not exceed the circular boundary
+    distance_from_center = math.sqrt((image_rect.centerx - WIDTH // 2) ** 2 + (image_rect.centery - HEIGHT // 2) ** 2)
+    
+    # If it's out of bounds, bring it back inside
+    if distance_from_center + max(image_rect.width, image_rect.height) / 2 > RADIUS * 2:
+        # Calculate how much we need to move it back
+        angle = math.atan2(image_rect.centery - HEIGHT // 2, image_rect.centerx - WIDTH // 2)
+        # Move the image back within the boundary
+        image_rect.centerx = WIDTH // 2 + math.cos(angle) * (RADIUS * 2 - max(image_rect.width, image_rect.height) / 2)
+        image_rect.centery = HEIGHT // 2 + math.sin(angle) * (RADIUS * 2 - max(image_rect.width, image_rect.height) / 2)
 
 # Main game loop
 running = True
@@ -113,11 +127,8 @@ while running:
                 image_rect.x = new_x
                 image_rect.y = new_y
 
-                # Check if the image is still within the circular boundary after dragging
-                if not is_within_circular_boundary(image_rect):
-                    # If the image is out of bounds, restore it to the previous valid position
-                    image_rect.x = new_x - offset_x
-                    image_rect.y = new_y - offset_y
+                # Ensure the image stays within the circular boundary
+                clamp_to_circular_boundary(image_rect)
 
     # Clear the screen with a white background
     screen.fill((255, 255, 255))
