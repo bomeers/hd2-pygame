@@ -27,22 +27,22 @@ def resize_image(image, target_width, target_height):
     return pygame.transform.scale(image, (int(new_width), int(new_height)))
 
 # Load the images from local files
-image_path = "Star-Map.bmp"  # Assuming the image is in the same folder as the script
-zoomed_out_path = "zoomed-out.png"  # Assuming the image is in the same folder as the script
-zoomed_in_path = "zoomed-in.png"  # Assuming the image is in the same folder as the script
+image_path = "Star-Map.bmp"  # Background image (Star-Map)
+zoomed_out_path = "zoomed-out.png"  # Overlay image when zooming out
+zoomed_in_path = "zoomed-in.png"  # Overlay image when zooming in
 
-# Load the "Star-Map.bmp" image (background)
+# Load and resize the "Star-Map.bmp" image (background)
 image = pygame.image.load(image_path)
-image = resize_image(image, WIDTH, HEIGHT)
 image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
-# Load the "zoomed-out.png" image (overlay when zooming out)
+# Load and resize the "zoomed-out.png" image (when zoomed out)
 zoomed_out_image = pygame.image.load(zoomed_out_path)
 zoomed_out_image = resize_image(zoomed_out_image, WIDTH, HEIGHT)
 zoomed_out_rect = zoomed_out_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
 # Load the "zoomed-in.png" image (overlay when zooming in)
 zoomed_in_image = pygame.image.load(zoomed_in_path)
+zoomed_in_rect = None  # This will be updated when zooming in
 
 # Variables for dragging, zooming, and zoom state
 dragging = False
@@ -102,18 +102,20 @@ while running:
                     if zoomed_in:
                         # Zoom out
                         zoom_level /= ZOOM_FACTOR
-                        # Show the zoomed-out image
-                        image = pygame.image.load(image_path)
-                        image = resize_image(image, WIDTH * zoom_level, HEIGHT * zoom_level)
+                        # Update the zoomed-in image if needed
+                        zoomed_in = False
                     else:
                         # Zoom in
                         zoom_level *= ZOOM_FACTOR
-                        # Hide the zoomed-out image and show the zoomed-in image
-                        image = pygame.image.load(image_path)
-                        image = resize_image(image, WIDTH * zoom_level, HEIGHT * zoom_level)
+                        # Resize the zoomed-in image to match the new zoom level and store its rect
+                        zoomed_in_image_scaled = resize_image(zoomed_in_image, image_rect.width, image_rect.height)
+                        zoomed_in_rect = zoomed_in_image_scaled.get_rect(center=image_rect.center)
+                        zoomed_in_image = zoomed_in_image_scaled
+                        zoomed_in = True
 
                     # Update the zoom state
-                    zoomed_in = not zoomed_in
+                    image = pygame.image.load(image_path)  # Reload the background image
+                    image = resize_image(image, WIDTH * zoom_level, HEIGHT * zoom_level)
                     image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
                 # Start dragging
@@ -141,7 +143,7 @@ while running:
                 if image_rect.right < WIDTH:
                     image_rect.right = WIDTH
                 if image_rect.bottom < HEIGHT:
-                    image_rect.bottom = HEIGHT
+                    image_rect.bottom = HEIGHT)
 
     # Clear the screen with a black background
     screen.fill((0, 0, 0))  # Black background
@@ -153,11 +155,9 @@ while running:
     if not zoomed_in:
         screen.blit(zoomed_out_image, zoomed_out_rect)
 
-    # If zoomed in, scale the zoomed-in image to match the size of the Star-Map image
+    # If zoomed in, draw the zoomed-in image (already resized) on top
     if zoomed_in:
-        zoomed_in_scaled = resize_image(zoomed_in_image, image_rect.width, image_rect.height)
-        zoomed_in_rect = zoomed_in_scaled.get_rect(center=image_rect.center)
-        screen.blit(zoomed_in_scaled, zoomed_in_rect)
+        screen.blit(zoomed_in_image, zoomed_in_rect)
 
     # Update the screen
     pygame.display.flip()
