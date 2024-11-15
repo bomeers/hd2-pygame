@@ -43,6 +43,10 @@ zoomed_in = False  # Keep track of whether the image is zoomed in or not
 last_click_time = 0  # Time of the last mouse click
 double_click = False  # Flag to indicate if it's a double-click
 
+# Create a transparent 1x1 pixel cursor to hide the default cursor but still show the custom one
+transparent_cursor = pygame.Surface((1, 1), pygame.SRCALPHA)  # 1x1 transparent surface
+pygame.mouse.set_cursor((1, 1), (0, 0), transparent_cursor.get_at((0, 0)), transparent_cursor.get_at((0, 0)))
+
 # Main game loop
 running = True
 while running:
