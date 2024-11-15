@@ -26,13 +26,20 @@ def resize_image(image, target_width, target_height):
     # Cast the new dimensions to integers before passing to scale
     return pygame.transform.scale(image, (int(new_width), int(new_height)))
 
-# Load the image from a local file
+# Load the images from local files
 image_path = "Star-Map.bmp"  # Assuming the image is in the same folder as the script
-image = pygame.image.load(image_path)
+earth_image_path = "super earth.png"  # Assuming the image is in the same folder as the script
 
-# Resize the image to fit the screen (initially, at its original aspect ratio)
+# Load and resize the "Star-Map.bmp" image
+image = pygame.image.load(image_path)
 image = resize_image(image, WIDTH, HEIGHT)
 image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+
+# Load the "super earth.png" image and keep it at a static width of 300px
+earth_image = pygame.image.load(earth_image_path)
+earth_image_width = 300  # Static width for the Earth image
+earth_image = resize_image(earth_image, earth_image_width, earth_image.get_height())  # Resize to static width
+earth_image_rect = earth_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))  # Center the Earth image
 
 # Variables for dragging, zooming, and zoom state
 dragging = False
@@ -99,7 +106,7 @@ while running:
                     # Update the zoom state
                     zoomed_in = not zoomed_in
 
-                    # Resize the image based on the new zoom level
+                    # Resize the background image based on the new zoom level
                     image = resize_image(pygame.image.load(image_path), WIDTH * zoom_level, HEIGHT * zoom_level)
                     image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
@@ -133,8 +140,11 @@ while running:
     # Clear the screen with a black background
     screen.fill((0, 0, 0))  # Black background
 
-    # Draw the image at its current position
+    # Draw the background image at its current position
     screen.blit(image, image_rect)
+
+    # Draw the "super earth.png" image on top of the background image (static size)
+    screen.blit(earth_image, earth_image_rect)
 
     # Update the screen
     pygame.display.flip()
