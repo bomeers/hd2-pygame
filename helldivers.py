@@ -8,7 +8,7 @@ WIDTH, HEIGHT = 480, 480  # Window size
 ZOOM_FACTOR = 4  # Zoom factor for each double click (for both zoom in and zoom out)
 DOUBLE_CLICK_TIME = 500  # Maximum time (in milliseconds) between clicks for a double-click
 # Set up the Pygame screen without the title bar (no frame)
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED)
 pygame.display.set_caption("Double Click to Zoom and Drag Image")
 
 # Resize the image while maintaining the aspect ratio
