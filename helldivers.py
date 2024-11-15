@@ -4,9 +4,11 @@ import pygame
 pygame.init()
 
 # Constants
-WIDTH, HEIGHT = 480, 480  # Window size (circle diameter)
+WIDTH, HEIGHT = 480, 480  # Window size
 ZOOM_FACTOR = 4  # Zoom factor for each double click (for both zoom in and zoom out)
 DOUBLE_CLICK_TIME = 500  # Maximum time (in milliseconds) between clicks for a double-click
+RADIUS = 240  # Radius of the circular boundary (half of 480px diameter)
+
 # Set up the Pygame screen without the title bar (no frame)
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("Double Click to Zoom and Drag Image")
@@ -27,7 +29,7 @@ def resize_image(image, target_width, target_height):
     return pygame.transform.scale(image, (int(new_width), int(new_height)))
 
 # Load the image from a local file
-image_path = "Star-Map.png"  # Assuming the image is in the same folder as the script
+image_path = "Star-Map.jpg"  # Assuming the image is in the same folder as the script
 image = pygame.image.load(image_path)
 
 # Resize the image to fit the screen (initially, at its original aspect ratio)
@@ -97,41 +99,23 @@ while running:
         # Mouse motion event for dragging the image
         if event.type == pygame.MOUSEMOTION:
             if dragging:
-                # Update image position while ensuring it doesn't go out of bounds
+                # Update image position while ensuring it doesn't go out of bounds (circular boundary)
+                new_x = event.pos[0] + offset_x
+                new_y = event.pos[1] + offset_y
 
-                # Constrain the image so that it doesn't go beyond the window
-                image_rect.x = event.pos[0] + offset_x
-                image_rect.y = event.pos[1] + offset_y
+                # Calculate the distance from the center of the screen
+                distance_from_center = ((new_x - WIDTH // 2) ** 2 + (new_y - HEIGHT // 2) ** 2) ** 0.5
 
-                # Ensure the image stays within the bounds of the circle (diameter of 480px)
-                image_width, image_height = image.get_size()
+                # Check if the image is within the circular boundary (radius of 240px)
+                if distance_from_center + image_rect.width // 2 * zoom_level > RADIUS * 2:
+                    # If out of bounds, limit the image's position so that it stays within the circle
+                    angle = pygame.math.Vector2(new_x - WIDTH // 2, new_y - HEIGHT // 2).angle_to((1, 0))
+                    new_x = WIDTH // 2 + RADIUS * pygame.math.cos(pygame.math.radians(angle)) - image_rect.width // 2 * zoom_level
+                    new_y = HEIGHT // 2 + RADIUS * pygame.math.sin(pygame.math.radians(angle)) - image_rect.height // 2 * zoom_level
 
-                # Constrain the x position
-                if image_rect.left > 0:
-                    image_rect.left = 0
-                if image_rect.right < WIDTH:
-                    image_rect.right = WIDTH
-
-                # Constrain the y position
-                if image_rect.top > 0:
-                    image_rect.top = 0
-                if image_rect.bottom < HEIGHT:
-                    image_rect.bottom = HEIGHT
-
-                # Prevent the image from going beyond the circle bounds
-                # Using the circular boundary as a constraint
-                max_x = WIDTH - image_width
-                max_y = HEIGHT - image_height
-
-                # Ensure the image stays within a circular area of diameter 480px
-                if image_rect.left < 0:
-                    image_rect.left = 0
-                if image_rect.top < 0:
-                    image_rect.top = 0
-                if image_rect.right > max_x:
-                    image_rect.right = max_x
-                if image_rect.bottom > max_y:
-                    image_rect.bottom = max_y
+                # Update the image's position
+                image_rect.x = new_x
+                image_rect.y = new_y
 
     # Clear the screen with a white background
     screen.fill((255, 255, 255))
