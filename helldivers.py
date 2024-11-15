@@ -11,6 +11,9 @@ DOUBLE_CLICK_TIME = 500  # Maximum time (in milliseconds) between clicks for a d
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED)
 pygame.display.set_caption("Double Click to Zoom and Drag Image")
 
+# Hide the mouse cursor
+pygame.mouse.set_visible(False)
+
 # Resize the image while maintaining the aspect ratio
 def resize_image(image, target_width, target_height):
     img_width, img_height = image.get_size()
