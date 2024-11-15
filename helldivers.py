@@ -46,6 +46,12 @@ zoomed_in = False  # Keep track of whether the image is zoomed in or not
 last_click_time = 0  # Time of the last mouse click
 double_click = False  # Flag to indicate if it's a double-click
 
+# Function to check if the image is within the circular boundary
+def is_within_circular_boundary(image_rect):
+    # Calculate distance from the center of the screen
+    distance_from_center = math.sqrt((image_rect.centerx - WIDTH // 2) ** 2 + (image_rect.centery - HEIGHT // 2) ** 2)
+    return distance_from_center + max(image_rect.width, image_rect.height) / 2 <= RADIUS * 2
+
 # Main game loop
 running = True
 while running:
@@ -100,23 +106,19 @@ while running:
         # Mouse motion event for dragging the image
         if event.type == pygame.MOUSEMOTION:
             if dragging:
-                # Update image position while ensuring it doesn't go out of bounds (circular boundary)
+                # Update image position
                 new_x = event.pos[0] + offset_x
                 new_y = event.pos[1] + offset_y
 
-                # Calculate the distance from the center of the screen
-                distance_from_center = ((new_x - WIDTH // 2) ** 2 + (new_y - HEIGHT // 2) ** 2) ** 0.5
-
-                # Check if the image is within the circular boundary (radius of 240px)
-                if distance_from_center + image_rect.width // 2 * zoom_level > RADIUS * 2:
-                    # If out of bounds, limit the image's position so that it stays within the circle
-                    angle = math.degrees(math.atan2(new_y - HEIGHT // 2, new_x - WIDTH // 2))
-                    new_x = WIDTH // 2 + RADIUS * math.cos(math.radians(angle)) - image_rect.width // 2 * zoom_level
-                    new_y = HEIGHT // 2 + RADIUS * math.sin(math.radians(angle)) - image_rect.height // 2 * zoom_level
-
-                # Update the image's position
+                # Update image_rect
                 image_rect.x = new_x
                 image_rect.y = new_y
+
+                # Check if the image is still within the circular boundary after dragging
+                if not is_within_circular_boundary(image_rect):
+                    # If the image is out of bounds, restore it to the previous valid position
+                    image_rect.x = new_x - offset_x
+                    image_rect.y = new_y - offset_y
 
     # Clear the screen with a white background
     screen.fill((255, 255, 255))
