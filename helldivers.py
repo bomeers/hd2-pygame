@@ -35,12 +35,6 @@ image = pygame.image.load(image_path)
 image = resize_image(image, WIDTH, HEIGHT)
 image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
-# Load the "super earth.png" image and set initial static width
-earth_image_width = 50  # Initial static width for the Earth image
-earth_image = pygame.image.load(earth_image_path)
-earth_image = resize_image(earth_image, earth_image_width, earth_image.get_height())  # Resize to static width
-earth_image_rect = earth_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))  # Center the Earth image
-
 # Variables for dragging, zooming, and zoom state
 dragging = False
 offset_x = 0
@@ -110,9 +104,6 @@ while running:
                     image = resize_image(pygame.image.load(image_path), WIDTH * zoom_level, HEIGHT * zoom_level)
                     image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
-                    # Adjust the Earth image's position to follow the zoomed-in background
-                    earth_image_rect.center = image_rect.center
-
                 # Start dragging
                 if not double_click:  # Don't start dragging if it's a double-click
                     if image_rect.collidepoint(event.pos):
@@ -145,12 +136,6 @@ while running:
 
     # Draw the background image at its current position
     screen.blit(image, image_rect)
-
-    # Update the Earth image's position to follow the zoomed-in background
-    earth_image_rect.center = image_rect.center
-
-    # Draw the "super earth.png" image on top of the background image (static size)
-    screen.blit(earth_image, earth_image_rect)
 
     # Update the screen
     pygame.display.flip()
