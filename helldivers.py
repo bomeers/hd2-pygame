@@ -43,8 +43,6 @@ zoomed_out_rect = zoomed_out_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
 # Load the "zoomed-in.png" image (overlay when zooming in)
 zoomed_in_image = pygame.image.load(zoomed_in_path)
-zoomed_in_image = resize_image(zoomed_in_image, WIDTH, HEIGHT)
-zoomed_in_rect = zoomed_in_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
 # Variables for dragging, zooming, and zoom state
 dragging = False
@@ -155,9 +153,11 @@ while running:
     if not zoomed_in:
         screen.blit(zoomed_out_image, zoomed_out_rect)
 
-    # If zoomed in, draw the zoomed-in image and hide the zoomed-out image
+    # If zoomed in, scale the zoomed-in image to match the size of the Star-Map image
     if zoomed_in:
-        screen.blit(zoomed_in_image, zoomed_in_rect)
+        zoomed_in_scaled = resize_image(zoomed_in_image, image_rect.width, image_rect.height)
+        zoomed_in_rect = zoomed_in_scaled.get_rect(center=image_rect.center)
+        screen.blit(zoomed_in_scaled, zoomed_in_rect)
 
     # Update the screen
     pygame.display.flip()
