@@ -1,5 +1,5 @@
 import pygame
-import math  # Import math module for trigonometric functions
+import math
 
 # Initialize Pygame
 pygame.init()
@@ -26,7 +26,6 @@ def resize_image(image, target_width, target_height):
         new_height = target_height
         new_width = target_height * aspect_ratio
 
-    # Cast the new dimensions to integers before passing to scale
     return pygame.transform.scale(image, (int(new_width), int(new_height)))
 
 # Load the image from a local file
