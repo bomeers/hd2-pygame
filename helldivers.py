@@ -46,9 +46,6 @@ zoomed_in = False  # Keep track of whether the image is zoomed in or not
 last_click_time = 0  # Time of the last mouse click
 double_click = False  # Flag to indicate if it's a double-click
 
-# Disable key repeat (to avoid issues with rapid key presses)
-pygame.key.set_repeat(0)
-
 # Main game loop
 running = True
 while running:
@@ -58,7 +55,6 @@ while running:
         
         # Check for Escape key to exit
         if event.type == pygame.KEYDOWN:
-            print(f"Key pressed: {event.key}")  # Print keycodes for debugging
             if event.key == pygame.K_ESCAPE:
                 running = False  # Exit the game loop when Escape is pressed
 
