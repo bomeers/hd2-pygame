@@ -45,7 +45,22 @@ double_click = False  # Flag to indicate if it's a double-click
 
 # Create a transparent 8x8 pixel cursor (the minimum size that works)
 transparent_cursor = pygame.Surface((8, 8), pygame.SRCALPHA)  # 8x8 transparent surface
-pygame.mouse.set_cursor((8, 8), (0, 0), transparent_cursor.get_at((0, 0)), transparent_cursor.get_at((0, 0)))
+
+# The bitmask for the transparent cursor. Each byte represents a row of 8 pixels.
+# A fully transparent 8x8 cursor has a bitmask of 8 bytes of 0x00.
+bitmask = [
+    0x00,  # First row of pixels (all transparent)
+    0x00,  # Second row of pixels (all transparent)
+    0x00,  # Third row of pixels (all transparent)
+    0x00,  # Fourth row of pixels (all transparent)
+    0x00,  # Fifth row of pixels (all transparent)
+    0x00,  # Sixth row of pixels (all transparent)
+    0x00,  # Seventh row of pixels (all transparent)
+    0x00,  # Eighth row of pixels (all transparent)
+]
+
+# Set the cursor to be this 8x8 transparent surface with a corresponding bitmask
+pygame.mouse.set_cursor((8, 8), (0, 0), bitmask, bitmask)
 
 # Main game loop
 running = True
