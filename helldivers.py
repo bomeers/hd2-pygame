@@ -35,9 +35,9 @@ image = pygame.image.load(image_path)
 image = resize_image(image, WIDTH, HEIGHT)
 image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
-# Load the "super earth.png" image and keep it at a static width of 300px
+# Load the "super earth.png" image and keep it at a static width of 100px
 earth_image = pygame.image.load(earth_image_path)
-earth_image_width = 300  # Static width for the Earth image
+earth_image_width = 100  # Static width for the Earth image
 earth_image = resize_image(earth_image, earth_image_width, earth_image.get_height())  # Resize to static width
 earth_image_rect = earth_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))  # Center the Earth image
 
@@ -109,6 +109,9 @@ while running:
                     # Resize the background image based on the new zoom level
                     image = resize_image(pygame.image.load(image_path), WIDTH * zoom_level, HEIGHT * zoom_level)
                     image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+
+                    # Adjust the Earth image's position to follow the zoomed-in background
+                    earth_image_rect.center = image_rect.center
 
                 # Start dragging
                 if not double_click:  # Don't start dragging if it's a double-click
