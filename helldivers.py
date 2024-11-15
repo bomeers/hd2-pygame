@@ -28,12 +28,17 @@ def resize_image(image, target_width, target_height):
 
 # Load the images from local files
 image_path = "Star-Map.bmp"  # Assuming the image is in the same folder as the script
-earth_image_path = "super earth.png"  # Assuming the image is in the same folder as the script
+zoomed_out_path = "zoomed-out.png"  # Assuming the image is in the same folder as the script
 
 # Load and resize the "Star-Map.bmp" image
 image = pygame.image.load(image_path)
 image = resize_image(image, WIDTH, HEIGHT)
 image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+
+# Load the "zoomed-out.png" image
+zoomed_out_image = pygame.image.load(zoomed_out_path)
+zoomed_out_image = resize_image(zoomed_out_image, WIDTH, HEIGHT)
+zoomed_out_rect = zoomed_out_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
 # Variables for dragging, zooming, and zoom state
 dragging = False
@@ -93,15 +98,18 @@ while running:
                     if zoomed_in:
                         # Zoom out
                         zoom_level /= ZOOM_FACTOR
+                        # Revert to the original image
+                        image = pygame.image.load(image_path)
+                        image = resize_image(image, WIDTH * zoom_level, HEIGHT * zoom_level)
                     else:
                         # Zoom in
                         zoom_level *= ZOOM_FACTOR
-                    
+                        # Switch to the zoomed-out image
+                        image = pygame.image.load(zoomed_out_path)
+                        image = resize_image(image, WIDTH * zoom_level, HEIGHT * zoom_level)
+
                     # Update the zoom state
                     zoomed_in = not zoomed_in
-
-                    # Resize the background image based on the new zoom level
-                    image = resize_image(pygame.image.load(image_path), WIDTH * zoom_level, HEIGHT * zoom_level)
                     image_rect = image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
                 # Start dragging
@@ -134,8 +142,12 @@ while running:
     # Clear the screen with a black background
     screen.fill((0, 0, 0))  # Black background
 
-    # Draw the background image at its current position
+    # Draw the main image (either the zoomed-in or zoomed-out image)
     screen.blit(image, image_rect)
+
+    # Overlay the zoomed-out image on top (if zoomed in, or whenever it's needed)
+    if zoomed_in:
+        screen.blit(zoomed_out_image, zoomed_out_rect)
 
     # Update the screen
     pygame.display.flip()
