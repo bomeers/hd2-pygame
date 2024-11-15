@@ -111,8 +111,8 @@ while running:
                 if image_rect.bottom < HEIGHT:
                     image_rect.bottom = HEIGHT
 
-    # Clear the screen with a white background
-    screen.fill((255, 255, 255))
+    # Clear the screen with a black background
+    screen.fill((0, 0, 0))  # Black background
 
     # Draw the image at its current position
     screen.blit(image, image_rect)
