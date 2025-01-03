@@ -87,17 +87,6 @@ while True:
                 if background_rect.bottom > 480:
                     background_rect.bottom = 480
 
-                # not needed if zoomed in (wait to confirm)
-                # ({background width or height}/2) + ({image width or height}/2), set top & left to ({image width or height}/2)
-                # if super_earth_image_rect.left < -42.5:
-                #     super_earth_image_rect.left = -42.5
-                # if super_earth_image_rect.top < -50:
-                #     super_earth_image_rect.top = -50
-                # if super_earth_image_rect.right > 1002.5:
-                #     super_earth_image_rect.right = 1002.5
-                # if super_earth_image_rect.bottom > 1010:
-                #     super_earth_image_rect.bottom = 1010
-
     screen.blit(background, background_rect)
     screen.blit(super_earth_image, super_earth_image_rect)
     pygame.display.update()
