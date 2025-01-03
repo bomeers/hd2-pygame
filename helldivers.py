@@ -31,11 +31,8 @@ background_x, background_y = background_zm_in.get_width()//2, background_zm_in.g
 # Main game loop
 while True:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
         # Exit the game loop when Escape is pressed
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE or event.type == pygame.QUIT:
             running = False  
             pygame.quit()
             exit()
@@ -93,7 +90,7 @@ while True:
 
 # TODO: 
 # - add double click buffer time to prevent unwanted zoom level on triple clicks.
-# - find way to display which faction owns what sector 
+# - find way to display which faction owns what sector (API)
 # - find way to optimize adding planets
 # - find way to use fractal noise to fudge planet textures:
 #   - use per-name-color-profiles for each planet
