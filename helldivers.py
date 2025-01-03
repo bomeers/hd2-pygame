@@ -6,17 +6,24 @@ pygame.init()
 # Constants 
 screen = pygame.display.set_mode((480, 480),)
 # screen = pygame.display.set_mode((480, 480), pygame.FULLSCREEN )
-background = pygame.image.load("Star-Map.bmp")
-background = pygame.transform.scale(background, (480, 480))
+
+background_original = pygame.image.load("Star-Map.bmp")
+background_zm_in = pygame.transform.scale(background_original.copy(), (1920, 1920))
+background_zm_out = pygame.transform.scale(background_original, (480, 480))
+background = background_zm_out
 background_rect = background.get_rect()
 background_initial_rect = background_rect.copy()
+
 super_earth_image = pygame.image.load("super-earth.png")
 super_earth_image_rect = super_earth_image.get_rect()
 super_earth_image_rect.center = background_initial_rect.center
+
 click_time = 0
 dragging = False
 zoomed = False
 offset_x, offset_y = 0, 0
+background_x, background_y = background_zm_in.get_width()//2, background_zm_in.get_height()//2
+
 # hide cursor
 # bitmask = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,]
 # pygame.mouse.set_cursor((8, 8), (0, 0), bitmask, bitmask)
@@ -27,7 +34,6 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-
         # Exit the game loop when Escape is pressed
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False  
@@ -38,22 +44,22 @@ while True:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if zoomed:
                 dragging = True
-            offset_x = background_rect.x - event.pos[0]
-            offset_y = background_rect.y - event.pos[1]
+                offset_x = background_rect.x - event.pos[0]
+                offset_y = background_rect.y - event.pos[1]
 
         # Mouse button up: Stop dragging
         elif event.type == pygame.MOUSEBUTTONUP:
             # check for double click
             if time.time() - click_time < 0.3:
                 if zoomed is False:
-                    background = pygame.transform.scale(background, (960, 960))
+                    background = background_zm_in
                     # center background on zoom
-                    background_rect.center = (0,0)
+                    background_rect.center = (-480,-480)
                 elif zoomed is True: 
-                    background = pygame.transform.scale(background, (480, 480))
+                    background = background_zm_out
                     # re-center all images
                     background_rect.topleft = background_initial_rect.topleft
-                    super_earth_image_rect.center = background_initial_rect.center
+                    super_earth_image_rect.center = background_rect.center
 
                 # toggle zoom state
                 zoomed = not zoomed
@@ -65,39 +71,39 @@ while True:
             if dragging:
                 background_rect.x = event.pos[0] + offset_x
                 background_rect.y = event.pos[1] + offset_y
-                super_earth_image_rect.x = background_rect.x + 437.5
-                super_earth_image_rect.y = background_rect.y + 430
-                
+
                 # Prevent the image from being dragged out of bounds
-                if background_rect.left < -480:
-                    background_rect.left = -480
-                if background_rect.top < -480:
-                    background_rect.top = -480
+                # ({background width or height}/2) - ({image width or height}/2))
+                super_earth_image_rect.x = background_rect.x + 918
+                super_earth_image_rect.y = background_rect.y + 910
+                
+                # ({background width or height} - {screen size}), set right & bottom to left-over number ?
+                if background_rect.left < -1440:
+                    background_rect.left = -1440
+                if background_rect.top < -1440:
+                    background_rect.top = -1440
                 if background_rect.right > 480:
                     background_rect.right = 480
                 if background_rect.bottom > 480:
                     background_rect.bottom = 480
 
-                # to rescale super earth, use: ({background-width-or-height}/2) + ({image-width-or-height}/2)
-                if super_earth_image_rect.left < -42.5:
-                    super_earth_image_rect.left = -42.5
-                if super_earth_image_rect.top < -50:
-                    super_earth_image_rect.top = -50
-                if super_earth_image_rect.right > 522.5:
-                    super_earth_image_rect.right = 522.5
-                if super_earth_image_rect.bottom > 530:
-                    super_earth_image_rect.bottom = 530
+                # not needed if zoomed in (wait to confirm)
+                # ({background width or height}/2) + ({image width or height}/2), set top & left to ({image width or height}/2)
+                # if super_earth_image_rect.left < -42.5:
+                #     super_earth_image_rect.left = -42.5
+                # if super_earth_image_rect.top < -50:
+                #     super_earth_image_rect.top = -50
+                # if super_earth_image_rect.right > 1002.5:
+                #     super_earth_image_rect.right = 1002.5
+                # if super_earth_image_rect.bottom > 1010:
+                #     super_earth_image_rect.bottom = 1010
 
     screen.blit(background, background_rect)
     screen.blit(super_earth_image, super_earth_image_rect)
     pygame.display.update()
-    
-pygame.quit()
 
 # TODO: 
-# - zoom in further just like in game table
-# - update super earth zoom level and boundaries
-# TODO STRETCH: 
+# - add double click buffer time to prevent unwanted zoom level on triple clicks.
 # - find way to display which faction owns what sector 
 # - find way to optimize adding planets
 # - find way to use fractal noise to fudge planet textures:
