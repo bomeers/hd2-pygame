@@ -4,8 +4,8 @@ import time
 pygame.init()
 
 # Constants 
-# screen = pygame.display.set_mode((480, 480), pygame.FULLSCREEN )
 screen = pygame.display.set_mode((480, 480),)
+# screen = pygame.display.set_mode((480, 480), pygame.FULLSCREEN )
 background = pygame.image.load("Star-Map.bmp")
 background = pygame.transform.scale(background, (480, 480))
 background_rect = background.get_rect()
@@ -25,7 +25,7 @@ while True:
             exit()
 
         # Exit the game loop when Escape is pressed
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False  
             pygame.quit()
             exit()
