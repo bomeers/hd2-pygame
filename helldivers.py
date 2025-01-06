@@ -18,15 +18,21 @@ super_earth_image = pygame.image.load("super-earth.png")
 super_earth_image_rect = super_earth_image.get_rect()
 super_earth_image_rect.center = background_initial_rect.center
 
+sprite_sheet = pygame.image.load('sprite-sheet.png')
+sprite_rect = pygame.Rect(0, 0, 383, 500)  # (x, y, width, height) 
+sprite_image = sprite_sheet.subsurface(sprite_rect)
+sprite_image = pygame.transform.scale(sprite_image, (100, 100))
+
 click_time = 0
 dragging = False
-zoomed = False
+zoomed = False  
 offset_x, offset_y = 0, 0
 background_x, background_y = background_zm_in.get_width()//2, background_zm_in.get_height()//2
 
 # hide cursor
 # bitmask = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,]
 # pygame.mouse.set_cursor((8, 8), (0, 0), bitmask, bitmask)
+
 
 # Main game loop
 while True:
@@ -37,7 +43,7 @@ while True:
             pygame.quit()
             exit()
 
-         # Mouse button down: Start dragging
+        # Mouse button down: Start dragging
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if zoomed:
                 dragging = True
@@ -46,19 +52,14 @@ while True:
 
         # Mouse button up: Stop dragging
         elif event.type == pygame.MOUSEBUTTONUP:
-            # check for double click
             if time.time() - click_time < 0.3:
                 if zoomed is False:
                     background = background_zm_in
-                    # center background on zoom
                     background_rect.center = (-480,-480)
                 elif zoomed is True: 
                     background = background_zm_out
-                    # re-center all images
                     background_rect.topleft = background_initial_rect.topleft
                     super_earth_image_rect.center = background_rect.center
-
-                # toggle zoom state
                 zoomed = not zoomed
             click_time = time.time()
             dragging = False
@@ -86,13 +87,12 @@ while True:
 
     screen.blit(background, background_rect)
     screen.blit(super_earth_image, super_earth_image_rect)
+    screen.blit(sprite_image, (100, 100))
+    screen.blit(sprite_image, (300, 300))
+    
     pygame.display.update()
 
 # TODO: 
 # - add double click buffer time to prevent unwanted zoom level on triple clicks.
 # - find way to display which faction owns what sector (API)
-# - find way to optimize adding planets
-# - find way to use fractal noise to fudge planet textures:
-#   - use per-name-color-profiles for each planet
-#   - use drop-shadows to fudge topology of planet
 # - create list of planet "objects", each with multiple updatable properties. (Eventually import this data from API?)
