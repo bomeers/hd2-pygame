@@ -4,8 +4,7 @@ import time
 pygame.init()
 
 # Constants 
-screen = pygame.display.set_mode((480, 480),)
-# screen = pygame.display.set_mode((480, 480), pygame.FULLSCREEN )
+screen = pygame.display.set_mode((480, 480),) # ,pygame.FULLSCREEN)
 
 background_original = pygame.image.load("Star-Map.bmp")
 background_zm_in = pygame.transform.scale(background_original.copy(), (1920, 1920))
@@ -14,20 +13,18 @@ background = background_zm_out
 background_rect = background.get_rect()
 background_initial_rect = background_rect.copy()
 
-super_earth_image = pygame.image.load("super-earth.png")
-super_earth_image_rect = super_earth_image.get_rect()
-super_earth_image_rect.center = background_initial_rect.center
+sprite_sheet = pygame.image.load('war-table-sprite-sheet.png')
 
-sprite_sheet = pygame.image.load('sprite-sheet.png')
-sprite_rect = pygame.Rect(0, 0, 383, 500)  # (x, y, width, height) 
-sprite_image = sprite_sheet.subsurface(sprite_rect)
-sprite_image = pygame.transform.scale(sprite_image, (100, 100))
+super_earth_sprite = pygame.Rect(335, 0, 173, 201)  # (x, y, width, height) 
+super_earth_rect = sprite_sheet.subsurface(super_earth_sprite)
+super_earth_image = pygame.transform.scale(super_earth_rect, (88, 100))
+super_earth_image_rect = super_earth_image.get_rect()
+super_earth_image_rect.center = background_rect.center
 
 click_time = 0
 dragging = False
 zoomed = False  
 offset_x, offset_y = 0, 0
-background_x, background_y = background_zm_in.get_width()//2, background_zm_in.get_height()//2
 
 # hide cursor
 # bitmask = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,]
@@ -72,8 +69,8 @@ while True:
 
                 # Prevent the image from being dragged out of bounds
                 # ({background width or height}/2) - ({image width or height}/2))
-                super_earth_image_rect.x = background_rect.x + 918
-                super_earth_image_rect.y = background_rect.y + 910
+                super_earth_image_rect.x = background_rect.x + 918 #((480/2)-(super_earth_image_rect.x/2)) # 918
+                super_earth_image_rect.y = background_rect.y + 910 #((480/2)-(super_earth_image_rect.y/2)) # 910
                 
                 # ({background width or height} - {screen size}), set right & bottom to left-over number ?
                 if background_rect.left < -1440:
@@ -87,8 +84,9 @@ while True:
 
     screen.blit(background, background_rect)
     screen.blit(super_earth_image, super_earth_image_rect)
-    screen.blit(sprite_image, (100, 100))
-    screen.blit(sprite_image, (300, 300))
+    # screen.blit(super_earth_image, (240, 240))
+    # screen.blit(sprite_image, (300, 300))
+    # screen.blit(sprite_sheet, (0, 0))
     
     pygame.display.update()
 
