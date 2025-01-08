@@ -43,7 +43,7 @@ Severin     - 5h790
 Sol         - super earth and mars
 Sten        - ?0f7c (smoke)
 Talus       - 8dc9
-Tanis       - h2c0f9
+Tanis       - h2c009
 Tarragon    - 7c325
 Theseus     - 24756a
 Trigon      - ae3b6
@@ -53,3 +53,32 @@ Valdis      - ca4729
 Xi Tauri    - 27he
 Xzar        - 608ed
 Ymir        - 8b1d2
+
+-----------------------
+1 = toxic
+2 = jungle
+3 = desert
+4 = canyon
+5 = mesa
+6 = highlands
+7 = rainforest
+8 = jungle
+9 = ethereal
+0 = crimsonmoor
+a = moon
+b = winter
+c = ?
+d = desolate, icemoss, or morass (morass)
+e = swamp
+f = desolate
+g = 
+h = 
+i = blackhole
+j = mars
+
+tundra
+morass 
+undergrowth 
+icemoss
+desolate 
+icemoss-special
