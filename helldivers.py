@@ -1,5 +1,7 @@
 import pygame
 import time
+import json
+import requests
 
 pygame.init()
 
@@ -32,6 +34,75 @@ offset = (0,0)
 # hide cursor
 # bitmask = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,]
 # pygame.mouse.set_cursor((8, 8), (0, 0), bitmask, bitmask)
+
+
+
+def load_planets_data_from_api(api_url):
+    # Make the GET request to the API
+    response = requests.get(api_url)
+    
+    # Check if the response was successful (status code 200)
+    if response.status_code == 200:
+        data = response.json()  # Parse the JSON from the response
+    else:
+        print(f"Failed to retrieve data. HTTP Status code: {response.status_code}")
+        return []
+
+    planets_list = []
+
+    # Iterate over the JSON data and extract relevant fields
+    for parent_number, planet_data in data.items():
+        name = planet_data["name"]
+        sector = planet_data["sector"]
+        biome = planet_data["biome"]["slug"] if planet_data["biome"] and isinstance(planet_data["biome"], dict) else "No Biome"
+
+        # Store the data in a dictionary
+        planet_info = {
+            "parent_number": int(parent_number),  # Convert parent_number to an integer
+            "name": name,
+            "sector": sector,
+            "biome": biome
+        }
+
+        planets_list.append(planet_info)
+
+    return planets_list
+
+def load_additional_planet_data(api_url):
+    # Make the GET request to the API
+    response = requests.get(api_url)
+
+    # Check if the response was successful (status code 200)
+    if response.status_code == 200:
+        data = response.json()  # Parse the JSON from the response
+    else:
+        print(f"Failed to retrieve data. HTTP Status code: {response.status_code}")
+        return []
+    
+    planet_status_list = []
+
+    for planet in data.get('planetStatus', []):
+        planet_obj = PlanetStatus(
+            index=planet['index'],
+            owner=planet['owner'],
+            health=planet['health'],
+            regen_per_second=planet['regenPerSecond'],
+            players=planet['players'],
+            position=planet['position']
+        )
+        planet_status_list.append(planet_obj)
+
+
+# Usage Example
+planets_api_url = "https://helldiverstrainingmanual.com/api/v1/planets"
+additional_api_url = "https://your-second-api.com/api/v1/planet_details"
+
+# Fetch planets data from the first API
+planets_data = load_planets_data_from_api(planets_api_url)
+
+# Fetch additional planet data from the second API
+additional_data = load_additional_planet_data(additional_api_url)
+
 
 
 # Main game loop
@@ -104,4 +175,4 @@ while True:
 # API
 # - use /api/v1/planets to get list of planets and biomes for images
 # - join /api/v1/war/status by index to get x y position and player count
-# - use /api/v1/war/campaign to get current events and 
+# - use /api/v1/war/campaign to get current events and  
