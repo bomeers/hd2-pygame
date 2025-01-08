@@ -1,6 +1,7 @@
 import json
 import requests
 
+# Get all planets (/api/v1/planets)
 def load_planets_data_from_api(api_url):
     response = requests.get(api_url)
     
@@ -30,6 +31,7 @@ def load_planets_data_from_api(api_url):
 
     return planets_list
 
+# Get additional planet data (/api/v1/war/status)
 def load_additional_planet_data(api_url):
     response = requests.get(api_url)
 
@@ -54,3 +56,7 @@ def merge_planet_data(list1, list2):
     ]
     print(result[9])
     return result
+
+def set_planets(merged_planet_data, sprite_location):
+    for planet in merged_planet_data:
+        print(planet["name"], planet["biome"], sprite_location[planet["biome"]], planet["position"])

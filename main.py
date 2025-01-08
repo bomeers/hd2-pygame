@@ -1,11 +1,41 @@
 import pygame
 import time
-from functions import load_planets_data_from_api, load_additional_planet_data, merge_planet_data
+from functions import load_planets_data_from_api, load_additional_planet_data, merge_planet_data, set_planets
 
 pygame.init()
-
-# Constants 
 screen = pygame.display.set_mode((480, 480),) # ,pygame.FULLSCREEN)
+
+# Hide Cursor
+# bitmask = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,]
+# pygame.mouse.set_cursor((8, 8), (0, 0), bitmask, bitmask)
+
+
+
+# Constants
+sprite_sheet = pygame.image.load('war-table-sprite-sheet.png')
+sprite_location = {
+        "toxic": (0, 0, 67, 67),
+        "morass": (67, 0, 67, 67),
+        "desert": (134, 0, 67, 67),
+        "canyon": (201, 0, 67, 67),
+        "mesa": (268, 0, 67, 67),
+        "highlands": (0, 67, 67, 67),
+        "rainforest": (67, 67, 67, 67),
+        "jungle": (134, 67, 67, 67),
+        "ethereal": (201, 67, 67, 67),
+        "crimsonmoor": (268, 67, 67, 67),
+        "icemoss": (0, 134, 67, 67),
+        "winter": (67, 134, 67, 67),
+        "tundra": (134, 134, 67, 67),
+        "desolate": (201, 134, 67, 67),
+        "swamp": (268, 134, 67, 67),
+        "moon": (0, 201, 67, 67),
+        "blackhole": (67, 201, 67, 67),
+        "mars": (134, 201, 67, 67),
+        "undergrowth": (67, 0, 67, 67),         # same as morass
+        "icemoss-special": (0, 134, 67, 67),    # same as icemoss
+        "No Biome": (0, 0, 67, 67),
+    }
 
 background_original = pygame.image.load("Star-Map.bmp")
 background_zm_in = pygame.transform.scale(background_original.copy(), (1920, 1920))
@@ -13,30 +43,6 @@ background_zm_out = pygame.transform.scale(background_original, (480, 480))
 background = background_zm_out
 background_rect = background.get_rect()
 background_initial_rect = background_rect.copy()
-
-sprite_sheet = pygame.image.load('war-table-sprite-sheet.png')
-sprite_location = [
-    ("toxic", 0, 0, 67, 67),
-    ("morass", 67, 0, 67, 67),
-    ("undergrowth", 67, 0, 67, 67), # same as morass
-    ("desert", 134, 0, 67, 67),
-    ("canyon", 201, 0, 67, 67),
-    ("mesa", 268, 0, 67, 67),
-    ("highlands", 0, 67, 67, 67),
-    ("rainforest", 67, 67, 67, 67),
-    ("jungle", 134, 67, 67, 67),
-    ("ethereal", 201, 67, 67, 67),
-    ("crimsonmoor", 268, 67, 67, 67),
-    ("icemoss", 0, 134, 67, 67),
-    ("icemoss-special", 0, 134, 67, 67), # same as icemoss
-    ("winter", 67, 134, 67, 67),
-    ("tundra", 134, 134, 67, 67),
-    ("desolate", 201, 134, 67, 67),
-    ("swamp", 268, 134, 67, 67),
-    ("moon", 0, 201, 67, 67),
-    ("blackhole", 67, 201, 67, 67),
-    ("mars", 134, 201, 67, 67),
-]
 
 super_earth_sprite = pygame.Rect(335, 0, 173, 201) # (x, y, width, height)
 super_earth_image = pygame.transform.scale(sprite_sheet.subsurface(super_earth_sprite), (88, 100))
@@ -47,22 +53,16 @@ mars_sprite = pygame.Rect(134, 201, 67, 67) # (x, y, width, height)
 mars_image = pygame.transform.scale(sprite_sheet.subsurface(mars_sprite), (50, 50))
 mars_image_rect = mars_image.get_rect()
 
-# PLANET ADD LOOP (WIP)
-
-
 click_time = 0
 dragging = False
 zoomed = False  
 offset = (0,0)
 
-# Hide Cursor
-# bitmask = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,]
-# pygame.mouse.set_cursor((8, 8), (0, 0), bitmask, bitmask)
-
 # Get API Data
 planets_data = load_planets_data_from_api("https://helldiverstrainingmanual.com/api/v1/planets")
 additional_data = load_additional_planet_data("https://helldiverstrainingmanual.com/api/v1/war/status")
 merged_data = merge_planet_data(planets_data, additional_data)
+set_planets(merged_data, sprite_location)
 
 
 # Main game loop
