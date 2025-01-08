@@ -15,27 +15,51 @@ background_rect = background.get_rect()
 background_initial_rect = background_rect.copy()
 
 sprite_sheet = pygame.image.load('war-table-sprite-sheet.png')
+sprite_location = [
+    ("toxic", 0, 0, 67, 67),
+    ("morass", 67, 0, 67, 67),
+    ("undergrowth", 67, 0, 67, 67), # same as morass
+    ("desert", 134, 0, 67, 67),
+    ("canyon", 201, 0, 67, 67),
+    ("mesa", 268, 0, 67, 67),
+    ("highlands", 0, 67, 67, 67),
+    ("rainforest", 67, 67, 67, 67),
+    ("jungle", 134, 67, 67, 67),
+    ("ethereal", 201, 67, 67, 67),
+    ("crimsonmoor", 268, 67, 67, 67),
+    ("icemoss", 0, 134, 67, 67),
+    ("icemoss-special", 0, 134, 67, 67), # same as icemoss
+    ("winter", 67, 134, 67, 67),
+    ("tundra", 134, 134, 67, 67),
+    ("desolate", 201, 134, 67, 67),
+    ("swamp", 268, 134, 67, 67),
+    ("moon", 0, 201, 67, 67),
+    ("blackhole", 67, 201, 67, 67),
+    ("mars", 134, 201, 67, 67),
+]
 
 super_earth_sprite = pygame.Rect(335, 0, 173, 201) # (x, y, width, height)
 super_earth_image = pygame.transform.scale(sprite_sheet.subsurface(super_earth_sprite), (88, 100))
 super_earth_image_rect = super_earth_image.get_rect()
 super_earth_image_rect.center = background_rect.center
 
-mars_sprite = pygame.Rect(268, 201, 67, 67) # (x, y, width, height)
+mars_sprite = pygame.Rect(134, 201, 67, 67) # (x, y, width, height)
 mars_image = pygame.transform.scale(sprite_sheet.subsurface(mars_sprite), (50, 50))
 mars_image_rect = mars_image.get_rect()
+
+# PLANET ADD LOOP (WIP)
+
 
 click_time = 0
 dragging = False
 zoomed = False  
 offset = (0,0)
 
-# hide cursor
+# Hide Cursor
 # bitmask = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,]
 # pygame.mouse.set_cursor((8, 8), (0, 0), bitmask, bitmask)
 
-
-# Call Functions
+# Get API Data
 planets_data = load_planets_data_from_api("https://helldiverstrainingmanual.com/api/v1/planets")
 additional_data = load_additional_planet_data("https://helldiverstrainingmanual.com/api/v1/war/status")
 merged_data = merge_planet_data(planets_data, additional_data)
@@ -98,10 +122,11 @@ while True:
     pygame.display.update()
 
 # TODO: 
+# - create loop to create planets
 # - smooth zooming
 # - add double click buffer time to prevent unwanted zoom level on triple clicks.
 # - find way to display which faction owns what sector (API)
-# - create list of planet "objects", each with multiple updatable properties. (Eventually import this data from API?)
+
 # API
 # - use /api/v1/planets to get list of planets and biomes for images
 # - join /api/v1/war/status by index to get x y position and player count
