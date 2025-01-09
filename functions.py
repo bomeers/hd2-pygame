@@ -1,8 +1,7 @@
 import pygame
-import json
 import requests
 
-# Get all planets (/api/v1/planets)
+# Get all planets (/api/v1/planets) 
 def load_planets_data_from_api(api_url):
     response = requests.get(api_url)
     
@@ -27,10 +26,9 @@ def load_planets_data_from_api(api_url):
         }
 
         planets_list.append(planet_info)
-        # for planet in planets_list:
-        #     print(planet)
 
     return planets_list
+
 
 # Get additional planet data (/api/v1/war/status)
 def load_additional_planet_data(api_url):
@@ -43,10 +41,9 @@ def load_additional_planet_data(api_url):
         return []
     
     planet_status_list = data.get("planetStatus", [])
-    # for planet in planet_status_list:
-    #     print(planet)
 
     return planet_status_list
+
 
 # Merge api data
 def merge_planet_data(list1, list2):
@@ -56,18 +53,20 @@ def merge_planet_data(list1, list2):
         for item2 in list2
         if item1['parent_number'] == item2['index']
     ]
-    # print(result[9])
     return result
+
 
 # Place planets on star map
 def set_planets(merged_planet_data, sprite_location, sprite_sheet):
-    # for planet in merged_planet_data:
-    #     print(planet["name"], planet["biome"], sprite_location[planet["biome"]], planet["position"])
-    planet = merged_planet_data[9]
-    pixel_x = int((planet["position"]["x"] + 0.5) * 960)
-    pixel_y = int((planet["position"]["y"] + 0.5) * 960)
-    # print(pixel_x, pixel_y)
+    planet_list = []
+    win_max = 1920
+    pos_min, pos_max = -1.0, 1.0
 
-    mars_sprite = pygame.Rect(sprite_location[planet["biome"]]) # (x, y, width, height)
-    mars_image = pygame.transform.scale(sprite_sheet.subsurface(mars_sprite), (50, 50))
-    mars_image_rect = mars_image.get_rect()
+    for planet in merged_planet_data:
+        sprite = pygame.Rect(sprite_location[planet["biome"]]) # (x, y, width, height)
+        image = pygame.transform.scale(sprite_sheet.subsurface(sprite), (20, 20)) # planet size
+        image_rect = image.get_rect()
+        image_rect.center = ((planet["position"]["x"] - pos_min) * win_max / (pos_max - pos_min) - 720, (-(planet["position"]["y"]) - pos_min) * win_max / (pos_max - pos_min) - 720)
+        planet_list.append((image, image_rect))
+
+    return planet_list
