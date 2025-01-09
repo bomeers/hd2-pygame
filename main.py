@@ -10,7 +10,6 @@ screen = pygame.display.set_mode((480, 480),) # ,pygame.FULLSCREEN)
 # pygame.mouse.set_cursor((8, 8), (0, 0), bitmask, bitmask)
 
 
-
 # Constants
 sprite_sheet = pygame.image.load('war-table-sprite-sheet.png')
 sprite_location = {
@@ -49,20 +48,39 @@ super_earth_image = pygame.transform.scale(sprite_sheet.subsurface(super_earth_s
 super_earth_image_rect = super_earth_image.get_rect()
 super_earth_image_rect.center = background_rect.center
 
-mars_sprite = pygame.Rect(134, 201, 67, 67) # (x, y, width, height)
-mars_image = pygame.transform.scale(sprite_sheet.subsurface(mars_sprite), (50, 50))
-mars_image_rect = mars_image.get_rect()
+# mars_sprite = pygame.Rect(134, 201, 67, 67) # (x, y, width, height)
+# mars_image = pygame.transform.scale(sprite_sheet.subsurface(mars_sprite), (50, 50))
+# mars_image_rect = mars_image.get_rect()
 
 click_time = 0
 dragging = False
 zoomed = False  
 offset = (0,0)
 
+
 # Get API Data
 planets_data = load_planets_data_from_api("https://helldiverstrainingmanual.com/api/v1/planets")
 additional_data = load_additional_planet_data("https://helldiverstrainingmanual.com/api/v1/war/status")
-merged_data = merge_planet_data(planets_data, additional_data)
-set_planets(merged_data, sprite_location)
+merged_planet_data = merge_planet_data(planets_data, additional_data)
+set_planets(merged_planet_data, sprite_location, sprite_sheet)
+
+
+
+temp_list = []
+
+for planet in merged_planet_data:
+    print(planet["name"])
+    print(planet["biome"])
+
+    sprite = pygame.Rect(sprite_location[planet["biome"]]) # (x, y, width, height)
+    image = pygame.transform.scale(sprite_sheet.subsurface(sprite), (50, 50))
+    image_rect = image.get_rect()
+    image_rect.center = (planet["position"]["x"], planet["position"]["y"])
+    
+    temp_list.append((image, image_rect))
+
+print(temp_list)
+
 
 
 # Main game loop
@@ -112,14 +130,17 @@ while True:
 
                 # Calculation: ({background width or height}/2) - ({image width or height}/2)) EX ((480/2)-(super_earth_image_rect.x/2))
                 super_earth_image_rect.topleft = (background_rect.x + 918, background_rect.y + 910)
-                mars_image_rect.topleft = (background_rect.x + 1000, background_rect.y + 900)
+                # mars_image_rect.topleft = (background_rect.x + 1000, background_rect.y + 900)
 
     screen.blit(background, background_rect)
     screen.blit(super_earth_image, super_earth_image_rect)
-    if zoomed == True:
-        screen.blit(mars_image, mars_image_rect)
+    # if zoomed == True:
+    for planet in temp_list:
+        screen.blit(planet[0], planet[1])
+        # print(planet[0], planet[1])
     
     pygame.display.update()
+
 
 # TODO: 
 # - create loop to create planets

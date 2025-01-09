@@ -1,3 +1,4 @@
+import pygame
 import json
 import requests
 
@@ -47,6 +48,7 @@ def load_additional_planet_data(api_url):
 
     return planet_status_list
 
+# Merge api data
 def merge_planet_data(list1, list2):
     result = [
         {**item1, **item2}
@@ -54,9 +56,18 @@ def merge_planet_data(list1, list2):
         for item2 in list2
         if item1['parent_number'] == item2['index']
     ]
-    print(result[9])
+    # print(result[9])
     return result
 
-def set_planets(merged_planet_data, sprite_location):
-    for planet in merged_planet_data:
-        print(planet["name"], planet["biome"], sprite_location[planet["biome"]], planet["position"])
+# Place planets on star map
+def set_planets(merged_planet_data, sprite_location, sprite_sheet):
+    # for planet in merged_planet_data:
+    #     print(planet["name"], planet["biome"], sprite_location[planet["biome"]], planet["position"])
+    planet = merged_planet_data[9]
+    pixel_x = int((planet["position"]["x"] + 0.5) * 960)
+    pixel_y = int((planet["position"]["y"] + 0.5) * 960)
+    # print(pixel_x, pixel_y)
+
+    mars_sprite = pygame.Rect(sprite_location[planet["biome"]]) # (x, y, width, height)
+    mars_image = pygame.transform.scale(sprite_sheet.subsurface(mars_sprite), (50, 50))
+    mars_image_rect = mars_image.get_rect()
