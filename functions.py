@@ -1,6 +1,11 @@
 import pygame
 import requests
 
+
+def log(text):
+    print(text, flush=True) # force prints inside event loop
+
+
 # Get all planets (/api/v1/planets) 
 def load_planets_data_from_api(api_url):
     response = requests.get(api_url)
@@ -70,3 +75,15 @@ def set_planets(merged_planet_data, sprite_location, sprite_sheet):
         planet_list.append((image, image_rect))
 
     return planet_list
+
+def smoothZoom(current, target): # exponential smoothing for shmovement
+
+    # take the current size, and get the difference to the target size,
+    # divide that difference by 75
+    # update the new size to 1/75 of that size difference (can be positive or negative for bigger/smaller).
+
+    # using a smaller number (replacing the 75) will make the animation faster
+
+    # this function is essentially an "ease-out" timing function
+    
+    return float(current + (target - current)/75)

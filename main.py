@@ -1,6 +1,9 @@
-import pygame
 import time
-from functions import load_planets_data_from_api, load_additional_planet_data, merge_planet_data, set_planets
+
+import pygame
+
+from functions import (load_additional_planet_data, load_planets_data_from_api,
+                       log, merge_planet_data, set_planets, smoothZoom)
 
 pygame.init()
 WIDTH,HEIGHT = 480,480
@@ -71,7 +74,6 @@ while True:
     for event in pygame.event.get():
         # Exit the game loop when Escape is pressed
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE or event.type == pygame.QUIT:
-            running = False  
             pygame.quit()
             exit()
 
@@ -89,12 +91,36 @@ while True:
             if time.time() - click_time < 0.3:
                 if zoomed is False:
                     background = background_zm_in
+
+                    currentZoom = 480
+                    targetZoom = 1920
+                    px = event.pos[0] / currentZoom
+                    py = event.pos[1] / currentZoom # get the percentage of event X,Y to zoom from event point (not implemented yet)
+                    while currentZoom < targetZoom - 3.1: # 3.1 is a buffer so that it breaks the while loop sooner
+                        currentZoom = smoothZoom(currentZoom, targetZoom)
+                        tempBG = pygame.transform.scale(background_original.copy(), (currentZoom, currentZoom))
+                        tempRect = tempBG.get_rect()
+                        screen.blit(tempBG, tempRect)
+                        pygame.display.update()
+                    zoomed = True
+
                     background_rect.center = (WIDTH/2,HEIGHT/2) # center of window size
                 elif zoomed is True: 
                     background = background_zm_out
                     background_rect.topleft = background_initial_rect.topleft
                     super_earth_image_rect.center = (WIDTH/2,HEIGHT/2) # center of window size
-                zoomed = not zoomed
+
+                    currentZoom = 1920
+                    targetZoom = 480
+                    while currentZoom > targetZoom + 3.1:
+                        currentZoom = smoothZoom(currentZoom, targetZoom)
+                        tempBG = pygame.transform.scale(background_original.copy(), (currentZoom, currentZoom))
+                        tempRect = tempBG.get_rect()
+                        screen.blit(tempBG, tempRect)
+                        pygame.display.update()
+                    zoomed = False
+                    
+                # zoomed = not zoomed
             click_time = time.time()
             dragging = False
 
