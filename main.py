@@ -154,7 +154,9 @@ while True:
 
 # TODO: 
 # - fix planet update position 
-# - smooth zooming
+# - fix smooth zooming center and time
+# - create vector of sector bounds to optimize and separate from background.
+#   - add parallax effect to background image.
 # - add double click buffer time to prevent unwanted zoom level on triple clicks.
 # - find way to display which faction owns what sector (API)
 
