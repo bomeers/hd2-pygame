@@ -35,6 +35,11 @@ class Camera:
 
             self.camera.x = max(-480, min(self.camera.x, 0))
             self.camera.y = max(-480, min(self.camera.y, 0))
+        
+    # TODO: implement this later when adding zoom
+    # def smoothZoom(camera, target_zoom, speed=0.1):
+    #     """Smoothly interpolate the camera zoom towards the target zoom level."""
+    #     camera.zoom = camera.zoom + (target_zoom - camera.zoom) * speed
 
 class Planet(pygame.sprite.Sprite):
     def __init__(self, index, name, sector, biome, owner, health, regenPerSecond, players, x, y, image):

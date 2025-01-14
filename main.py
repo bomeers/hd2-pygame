@@ -74,6 +74,9 @@ while True:
 # - add smooth zooming to camera
 # - add double click buffer time to prevent unwanted zoom level on triple clicks.
 # - find way to display which faction owns what sector (API)
+# - center planets on sector grid
+# - center parallax background on sector grid center
+# - add click-on-planet functionality to view per-planet stats
 
 # API
 # - use /api/v1/war/campaign to get current events and defense status
