@@ -1,53 +1,49 @@
 import pygame
-import random
-from pygame.locals import *
-from functions import (load_additional_planet_data, load_planets_data_from_api, log, merge_planet_data, set_planets, smoothZoom)
+# from pygame.locals import *
+from functions import (load_planet_data, smoothZoom)
 
 pygame.init()
 
-# Screen setup
-screen_width = 480
-screen_height = 480
+screen_width, screen_height = 480, 480
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Helldivers War Table")
 
-# Load images
-background = pygame.image.load('Star-Map.bmp').convert()
+
+# ////////
+# Images /
+# ////////
+background = pygame.image.load('Star-Map-original.bmp').convert()
+background = pygame.transform.scale(background, (screen_width * 2, screen_height * 2))
+sectors = pygame.image.load('sectors.png').convert_alpha()
+sectors.set_alpha(25)
 sprite_sheet = pygame.image.load('war-table-sprite-sheet.png').convert_alpha()  # Using convert_alpha to support transparency
+
+super_earth_image = pygame.transform.scale(sprite_sheet.subsurface(pygame.Rect(335, 0, 173, 201)), (88, 100))
+super_earth_image.get_rect().center = (screen_width/2, screen_height/2)
+
 sprite_location = {
-        "toxic": (0, 0, 67, 67),
-        "morass": (67, 0, 67, 67),
-        "desert": (134, 0, 67, 67),
-        "canyon": (201, 0, 67, 67),
-        "mesa": (268, 0, 67, 67),
-        "highlands": (0, 67, 67, 67),
-        "rainforest": (67, 67, 67, 67),
-        "jungle": (134, 67, 67, 67),
-        "ethereal": (201, 67, 67, 67),
-        "crimsonmoor": (268, 67, 67, 67),
-        "icemoss": (0, 134, 67, 67),
-        "winter": (67, 134, 67, 67),
-        "tundra": (134, 134, 67, 67),
-        "desolate": (201, 134, 67, 67),
-        "swamp": (268, 134, 67, 67),
-        "moon": (0, 201, 67, 67),
-        "blackhole": (67, 201, 67, 67),
-        "mars": (134, 201, 67, 67),
-        "undergrowth": (67, 0, 67, 67),         # same as morass
-        "icemoss-special": (0, 134, 67, 67),    # same as icemoss
-        "No Biome": (0, 0, 67, 67),
-    }
-
-super_earth_sprite = pygame.Rect(335, 0, 173, 201) # (x, y, width, height)
-super_earth_image = pygame.transform.scale(sprite_sheet.subsurface(super_earth_sprite), (88, 100))
-super_earth_image_rect = super_earth_image.get_rect()
-super_earth_image_rect.center = (screen_width/2, screen_height/2)
-
-# Load planet data from the API
-planets_data = load_planets_data_from_api("https://helldiverstrainingmanual.com/api/v1/planets")
-additional_data = load_additional_planet_data("https://helldiverstrainingmanual.com/api/v1/war/status")
-merged_planet_data = merge_planet_data(planets_data, additional_data)
-planet_list = set_planets(merged_planet_data, sprite_location, sprite_sheet)
+    "toxic": (0, 0, 67, 67),
+    "morass": (67, 0, 67, 67),
+    "desert": (134, 0, 67, 67),
+    "canyon": (201, 0, 67, 67),
+    "mesa": (268, 0, 67, 67),
+    "highlands": (0, 67, 67, 67),
+    "rainforest": (67, 67, 67, 67),
+    "jungle": (134, 67, 67, 67),
+    "ethereal": (201, 67, 67, 67),
+    "crimsonmoor": (268, 67, 67, 67),
+    "icemoss": (0, 134, 67, 67),
+    "winter": (67, 134, 67, 67),
+    "tundra": (134, 134, 67, 67),
+    "desolate": (201, 134, 67, 67),
+    "swamp": (268, 134, 67, 67),
+    "moon": (0, 201, 67, 67),
+    "blackhole": (67, 201, 67, 67),
+    "mars": (134, 201, 67, 67),
+    "undergrowth": (67, 0, 67, 67),         # same as morass
+    "icemoss-special": (0, 134, 67, 67),    # same as icemoss
+    "No Biome": (0, 0, 67, 67),
+}
 
 
 # /////////
@@ -60,20 +56,18 @@ class Camera:
         self.window_size = (width, height)  # Window size
         self.dragging = False  # To track if the user is dragging the camera
         self.drag_start_pos = None  # Start position of the drag
-        self.zoom_default = 4
-        self.zoom_level = 0.5  # Default zoom level (1 = zoomed-in)
-
+        self.camera.center = (0,0)
+        # self.zoom_default = 4
+        # self.zoom_level = 0.5  # Default zoom level (1 = zoomed-in)
 
     def apply(self, entity):
         """Moves the entity based on camera position."""
-        # Scale entity position based on zoom level
-        return entity.rect.move(self.camera.topleft).inflate(entity.rect.width * (self.zoom_level - self.zoom_default), entity.rect.height * (self.zoom_level - self.zoom_default))
+        return entity.rect.move(self.camera.topleft)
 
     def start_drag(self, pos):
         """Initiates dragging when mouse is pressed."""
-        if self.zoom_level == self.zoom_default:  # Only allow dragging when zoomed in
-            self.dragging = True
-            self.drag_start_pos = pos
+        self.dragging = True
+        self.drag_start_pos = pos
 
     def stop_drag(self):
         """Stops dragging when mouse is released."""
@@ -81,26 +75,28 @@ class Camera:
 
     def drag(self, pos):
         """Update camera position based on drag movement."""
-        if self.zoom_level == self.zoom_default and self.dragging:  # Only allow dragging when zoomed in
+        if self.dragging:  # Only allow dragging when zoomed in
             dx = pos[0] - self.drag_start_pos[0]
             dy = pos[1] - self.drag_start_pos[1]
             self.camera.x += dx
             self.camera.y += dy
             self.drag_start_pos = pos  # Update the drag start position
 
-    def toggle_zoom(self):
-        """Toggle between two zoom levels: zoomed-in and zoomed-out."""
-        if self.zoom_level == self.zoom_default:
-            self.zoom_level = 0.5  # Zoomed out
-            self.camera.topleft = (0, 0)  # Reset camera position
-        else:
-            self.zoom_level = self.zoom_default  # Zoomed in
-            self.camera.topleft = (-1977, -1977) # Set camera position to the center of the world CHANGE THIS TO SET BACKGROUND POS INSTEAD
+            self.camera.x = max(-480, min(self.camera.x, 0))
+            self.camera.y = max(-480, min(self.camera.y, 0))
 
 class Planet(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, index, name, sector, biome, owner, health, regenPerSecond, players, x, y):
         super().__init__()
-        self.image = sprite_sheet
+        self.index = index
+        self.name = name
+        self.sector = sector
+        self.biome = biome
+        self.owner = owner
+        self.health = health
+        self.regenPerSecond = regenPerSecond
+        self.players = players
+        self.image = pygame.transform.scale(sprite_sheet.subsurface(pygame.Rect(sprite_location[biome])), (20, 20))
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
 
@@ -110,17 +106,16 @@ class Planet(pygame.sprite.Sprite):
 # ///////////
 clock = pygame.time.Clock()
 camera = Camera(screen_width, screen_height)
+
+# Load planet data from the API
+planets_data = load_planet_data(sprite_sheet)
+
 planets = pygame.sprite.Group()
-
-# Place 5 planets randomly on the map
-for _ in range(10):
-    x = random.randint(0, 1080)  # Random x position within the world size
-    y = random.randint(0, 1080)  # Random y position within the world size
-    planet = Planet(x, y)
-    planets.add(planet)
-
-last_click_time = 0
-initial_center = False
+for planet in planets_data:
+    x = (planet["position"]["x"] - -1.0) * (screen_height * 2) / (1.0 - -1.0)
+    y = (-(planet["position"]["y"]) - -1.0) * (screen_height * 2) / (1.0 - -1.0)
+    item = Planet(planet['index'], planet['name'], planet['sector'], planet['biome'], planet['owner'], planet['health'], planet['regenPerSecond'], planet['players'], x, y)
+    planets.add(item)
 
 
 # ///////////
@@ -131,46 +126,32 @@ while True:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE or event.type == pygame.QUIT:
             pygame.quit() # Exit the game loop when Escape is pressed
             exit()
-
-        if event.type == MOUSEBUTTONDOWN:
-            if event.button == 1:  # Left mouse button pressed
-                current_time = pygame.time.get_ticks()
-                if current_time - last_click_time <= 300:
-                    camera.toggle_zoom()
-                last_click_time = current_time
-                camera.start_drag(event.pos)  # Start dragging
-
-        if event.type == MOUSEBUTTONUP:
-            if event.button == 1:  # Left mouse button released
-                camera.stop_drag()
-
-    if camera.dragging:
-        mouse_pos = pygame.mouse.get_pos() # update the camera's position
-        camera.drag(mouse_pos)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            camera.start_drag(event.pos)
+        elif event.type == pygame.MOUSEBUTTONUP:
+            camera.stop_drag()
+        elif event.type == pygame.MOUSEMOTION:
+            camera.drag(event.pos)
     
-    # Apply the camera movement to the background (parallax)
-    background_offset_x = camera.camera.x * 0.85 
-    background_offset_y = camera.camera.y * 0.85
     
-    # Scale the backgrounds based on zoom level
-    scaled_background = pygame.transform.scale(background, (int(background.get_width() * camera.zoom_level), int(background.get_height() * camera.zoom_level)))
+    # Draw scene
+    screen.blit(background, (camera.camera.x/1.2, camera.camera.y/1.2))
+    screen.blit(sectors, (camera.camera.x, camera.camera.y))
 
-    # Draw the background
-    background_rect = pygame.Rect(background_offset_x, background_offset_y, *scaled_background.get_size())
-    if initial_center == False:
-        background_rect.center = (screen_width/2, screen_height/2)
-        initial_center = True
-    screen.blit(scaled_background, background_rect)
-
-    super_earth_image_rect.center = background_rect.center
-    screen.blit(super_earth_image, super_earth_image_rect)
-
-    # Draw the planets 
     for planet in planets:
         screen.blit(planet.image, camera.apply(planet))
 
-    pygame.display.update() # Update the display
+    screen.blit(super_earth_image, (camera.camera.x + 435, camera.camera.y + 440)) # not sure what the equasion is yet
 
+
+    pygame.display.update()
     clock.tick(60) # Set the FPS
 
-# add back in the 2nd parallax background layer then make one not have acceleration
+# TODO: 
+# - RE-ADD ZOOM FUNCTIONALITY LAST (removed for now to reduce logic stress)
+# - add smooth zooming to camera
+# - add double click buffer time to prevent unwanted zoom level on triple clicks.
+# - find way to display which faction owns what sector (API)
+
+# API
+# - use /api/v1/war/campaign to get current events and defense status

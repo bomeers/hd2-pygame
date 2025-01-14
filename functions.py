@@ -5,10 +5,18 @@ import requests
 def log(text):
     print(text, flush=True) # force prints inside event loop
 
+# get all planet data
+def load_planet_data(sprite_sheet):
+    list1 = load_planets_data_from_api()
+    list2 = load_additional_planet_data()
+    merged = merge_planet_data(list1, list2)
+    # planet_list = set_planets(merged, sprite_sheet)
+    return merged
+
 
 # Get all planets (/api/v1/planets) 
-def load_planets_data_from_api(api_url):
-    response = requests.get(api_url)
+def load_planets_data_from_api():
+    response = requests.get("https://helldiverstrainingmanual.com/api/v1/planets")
     
     if response.status_code == 200:
         data = response.json()
@@ -36,8 +44,8 @@ def load_planets_data_from_api(api_url):
 
 
 # Get additional planet data (/api/v1/war/status)
-def load_additional_planet_data(api_url):
-    response = requests.get(api_url)
+def load_additional_planet_data():
+    response = requests.get("https://helldiverstrainingmanual.com/api/v1/war/status")
 
     if response.status_code == 200:
         data = response.json()
@@ -62,7 +70,30 @@ def merge_planet_data(list1, list2):
 
 
 # Place planets on star map
-def set_planets(merged_planet_data, sprite_location, sprite_sheet):
+def set_planets(merged_planet_data, sprite_sheet):
+    sprite_location = {
+        "toxic": (0, 0, 67, 67),
+        "morass": (67, 0, 67, 67),
+        "desert": (134, 0, 67, 67),
+        "canyon": (201, 0, 67, 67),
+        "mesa": (268, 0, 67, 67),
+        "highlands": (0, 67, 67, 67),
+        "rainforest": (67, 67, 67, 67),
+        "jungle": (134, 67, 67, 67),
+        "ethereal": (201, 67, 67, 67),
+        "crimsonmoor": (268, 67, 67, 67),
+        "icemoss": (0, 134, 67, 67),
+        "winter": (67, 134, 67, 67),
+        "tundra": (134, 134, 67, 67),
+        "desolate": (201, 134, 67, 67),
+        "swamp": (268, 134, 67, 67),
+        "moon": (0, 201, 67, 67),
+        "blackhole": (67, 201, 67, 67),
+        "mars": (134, 201, 67, 67),
+        "undergrowth": (67, 0, 67, 67),         # same as morass
+        "icemoss-special": (0, 134, 67, 67),    # same as icemoss
+        "No Biome": (0, 0, 67, 67),
+    }
     planet_list = []
     win_max = 1920
     pos_min, pos_max = -1.0, 1.0
